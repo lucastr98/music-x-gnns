@@ -6,6 +6,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
+MIN_ID = 71
+MAX_ID = 100
+
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 
@@ -16,37 +19,50 @@ def get_html(driver, aid):
     WebDriverWait(driver, 10).until(
       EC.presence_of_element_located((By.ID, 'sidebarNav'))
     )
-
-    # check if relatedArtistsSidebarLink is present
-    if driver.find_elements(By.ID, 'relatedArtistsSidebarLink'):
-      # wait for one of the related artists classes
-      WebDriverWait(driver, 10).until(
-        lambda driver: driver.find_element(By.CSS_SELECTOR, 
-            ".related.similars.clearfix, \
-             .related.influencers.clearfix, \
-             .related.followers.clearfix, \
-             .related.associatedwith.clearfix, \
-             .related.collaboratorwith.clearfix")
-      )
   except TimeoutException:
-    # sidebarNav not found
-    print("sidebarNav not present.")
-  finally:
-    return driver.page_source
+    print("  sidebarNav not found", end="")
+    return None
+
+  # check if relatedArtistsSidebarLink is present
+  if driver.find_elements(By.ID, 'relatedArtistsSidebarLink'):
+    # wait for one of the related artists classes
+    try:
+      WebDriverWait(driver, 10).until(EC.any_of(
+          EC.presence_of_element_located((By.CSS_SELECTOR, '.related.similars.clearfix')),
+          EC.presence_of_element_located((By.CSS_SELECTOR, '.related.influencers.clearfix')),
+          EC.presence_of_element_located((By.CSS_SELECTOR, '.related.followers.clearfix')),
+          EC.presence_of_element_located((By.CSS_SELECTOR, '.related.associatedwith.clearfix')),
+          EC.presence_of_element_located((By.CSS_SELECTOR, '.related.collaboratorwith.clearfix'))
+        )
+      )
+    except TimeoutException:
+      print("  no related artists class found", end="")
+      return None
+
+  return driver.page_source
 
 if __name__ == '__main__':
   driver = webdriver.Chrome(options=chrome_options)
   aids = pd.read_csv('../data/am-ids_only_clean.csv', index_col='id')
-  total_rows = aids.shape[0]
   for index, row in aids.iterrows():
-    print(f"Row {index+1}/{total_rows}")
+    if index < MIN_ID:
+      continue
+    print(f"Index {index}/{MAX_ID}")
     aid = row['allmusic_id']
 
     html = get_html(driver, aid)
+    count = 1
+    while (html == None):
+      print(f': retry {count}/10')
+      html = get_html(driver, aid)
+      if count >= 10 and html == None:
+        print(f':  all retries failed')
+        break
+      count = count + 1
 
-    f = open(f'../data/htmls/relatedArtists_{aid}.html', "w")
-    f.write(html)
-    f.close()
-
+    if html != None:
+      f = open(f'../data/htmls/relatedArtists_{aid}.html', "w")
+      f.write(html)
+      f.close()
 
   driver.quit()
