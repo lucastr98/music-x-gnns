@@ -68,7 +68,7 @@ for index, row in aids.iterrows():
 
   # collaborated with
   try:
-    collaborated_with_xml = soup.select('.related.collaboratedwith.clearfix a')
+    collaborated_with_xml = soup.select('.related.collaboratorwith.clearfix a')
     collaborated_with = [xml.get('href')[-12:] for xml in collaborated_with_xml]
   except AttributeError:
     collaborated_with = None
