@@ -9,8 +9,7 @@ influenced_by_list = []
 followed_by_list = []
 associated_with_list = []
 collaborated_with_list = []
-# songs_list = []
-# song_titles_list = []
+songs_list = []
 for index, row in aids.iterrows():
   print(f"Row {index+1}")
 
@@ -76,9 +75,9 @@ for index, row in aids.iterrows():
     collaborated_with = None
   collaborated_with_list.append(collaborated_with)
 
-  # with open(f'htmls/songs_{row["allmusic_id"]}.html', 'r', encoding='utf-8') as file:
-  #   html = file.read()
-  # soup = BeautifulSoup(html, 'html.parser')
+  with open(f'../data/htmls/songs/songs_{row["allmusic_id"]}.html', 'r', encoding='utf-8') as file:
+    html = file.read()
+  soup = BeautifulSoup(html, 'html.parser')
 
   # # songs
   # try:
@@ -88,16 +87,27 @@ for index, row in aids.iterrows():
   #   songs = [(song_ids[i], song_names[i]) for i in range(0, len(song_ids))]
   # except AttributeError:
   #   songs = None
+  # if not songs:
+  #   songs = None
   # songs_list.append(songs)
 
-  # # song titles
-  # try:
-  #   song_titles_xml = soup.select('.songTitle a')
-  #   song_titles = [xml.get('href')[-12:] for xml in song_titles_xml]
-  # except AttributeError:
-  #   song_titles = None
-  # song_titles_list.append(song_titles)
-  
+  # songs without features
+  try:
+    songs = []
+    songs_xml = soup.select('.singleSongResult')
+    for song in songs_xml:
+      title_element = song.select_one('.songTitle a')
+      if title_element:
+        song_title = title_element.text
+        feat_artist = song.select_one('.songTitle .featuredArtists')
+        if not feat_artist:
+          song_id = title_element.get('href')[-12:]
+          songs.append((song_id, song_title))
+  except AttributeError:
+    songs = None
+  if not songs:
+    songs = None
+  songs_list.append(songs)
 
 aids = aids.rename(columns={'allmusic_id': 'artist_id'})
 aids['name'] = name_list
@@ -106,5 +116,5 @@ aids['influenced_by'] = influenced_by_list
 aids['followed_by'] = followed_by_list
 aids['associated_with'] = associated_with_list
 aids['collaborated_with'] = collaborated_with_list
-# aids['songs'] = songs_list
-aids.to_csv('../data/am-ids_relatedArtists.csv')
+aids['songs'] = songs_list
+aids.to_csv('../data/am-ids_relatedArtists_songs_no_features.csv')
