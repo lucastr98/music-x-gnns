@@ -5,6 +5,7 @@ import zstandard as zstd
 import os
 import ast
 import shutil
+import subprocess
 
 def download_file(url, local_filename):
   with requests.get(url, stream=True) as r:
@@ -14,25 +15,18 @@ def download_file(url, local_filename):
         if chunk:  # filter out keep-alive new chunks
           f.write(chunk)
 
-def decompress_zstd(zstd_file, output_file):
-  with open(zstd_file, 'rb') as compressed:
-    with open(output_file, 'wb') as decompressed:
-      dctx = zstd.ZstdDecompressor()
-      decompressed.write(dctx.stream_reader(compressed).read())
-  os.remove(zstd_file)  # Optionally remove the compressed file
+def decompress(zstd_file):
+  tar_command = f"tar --use-compress-program=unzstd -xvf {zstd_file} -C data/"
+  try:
+    subprocess.run(tar_command, check=True, shell=True)
+  except subprocess.CalledProcessError as e:
+    print(f"An error occurred during decompression: {e}")
 
-def extract_tar(tar_file):
-  with tarfile.open(tar_file, 'r') as tar:
-    tar.extractall(path='.')
-  os.remove(tar_file)  # Optionally remove the tar file after extraction
-
-def download_uncompress(num):
+def download_decompress(num):
   url = f'https://data.metabrainz.org/pub/musicbrainz/acousticbrainz/dumps/acousticbrainz-lowlevel-json-20220623/acousticbrainz-lowlevel-json-20220623-{num}.tar.zst'
   zstd_file = f'data/acousticbrainz-lowlevel-json-{num}.tar.zst'
-  tar_file = f'data/acousticbrainz-lowlevel-json-{num}.tar'
   download_file(url, zstd_file)
-  decompress_zstd(zstd_file, tar_file)
-  extract_tar(tar_file)
+  decompress(zstd_file)
 
 def get_jsons(songs, num):
   for idx, row in songs.iterrows():
@@ -53,8 +47,9 @@ if __name__ == "__main__":
 
   for i in range(0, 1):
     print(f"Starting Download of File {i}")
-    download_uncompress(i)
+    download_decompress(i)
     print("Download successful, starting JSON extraction")
     get_jsons(songs, i)
     print("JSON extraction done\n")
+    cleanup(i)
   
