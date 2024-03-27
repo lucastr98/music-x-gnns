@@ -41,16 +41,14 @@ def get_year(recording):
   return None
 
 if __name__ == '__main__':
-  # songs = pd.read_csv('../data/songs_100_artists_sample.csv', index_col='id')
-  songs = pd.read_csv('../data/songs_100_artists_sample.csv')
+  songs = pd.read_csv('../data/songs_no_features.csv')
 
   am_mb_mappings = []
   for idx, row in songs.iterrows():
     print(f"Index {idx}")
 
     mbid_year_list = []
-    # with open(f'../data/xmls/songs/song_{row["song_id"]}.xml', 'r') as f:
-    with open(f'../data/xmls/songs/mb-song-id_search_{row["song_id"]}.xml', 'r') as f:
+    with open(f'../data/xmls/songs/song_{row["song_id"]}.xml', 'r') as f:
       data = f.read()
       bs_data = BeautifulSoup(data, 'xml')
 
@@ -61,4 +59,4 @@ if __name__ == '__main__':
     am_mb_mappings.append((idx, row['song_id'], get_ordered_id_list(mbid_year_list) if mbid_year_list else None))
 
   df = pd.DataFrame(am_mb_mappings, columns=['id', 'allmusic_id', 'musicbrainz_ids'])
-  df.to_csv('../data/songs_am-ids_mb-ids_100_artists_sample.csv', index=False)
+  df.to_csv('../data/songs_am-ids_mb-ids.csv', index=False)
