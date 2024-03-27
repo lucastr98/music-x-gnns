@@ -18,17 +18,18 @@ def get_song_xml(query):
     return None
 
 if __name__ == '__main__':
-  songs = pd.read_csv('../data/songs_no_features.csv', index_col='id')
+  songs = pd.read_csv('../data/songs_sample.csv', index_col='id')
   
   for idx, row in songs.iterrows():
     print(idx)
     artist_name = quote(row['artist_name'], safe='')
     song_name = quote(row['song_name'], safe='')
     query = f'artist:{artist_name}%20AND%20recording:{song_name}'
+    print(query)
 
     xml = get_song_xml(query)
     if xml != None:
-      f = open(f'../data/xmls/mb-song-id_search/mb-song-id_search_{row["song_id"]}.xml', "w")
+      f = open(f'../data/xmls/songs/song_{row["song_id"]}.xml', "w")
       f.write(xml)
       f.close()
 
