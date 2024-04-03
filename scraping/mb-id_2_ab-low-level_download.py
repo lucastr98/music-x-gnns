@@ -32,13 +32,14 @@ def get_jsons(songs, num):
   for idx, row in songs.iterrows():
     print(f"  File {num}: Index {idx}")
     for mbid in row['musicbrainz_ids']:
-      filename = f'data/acousticbrainz-lowlevel-json-{num}/lowlevel/{mbid[:2]}/{mbid[2]}/{mbid}-0.json'
+      filename = f'data/acousticbrainz-lowlevel-json-20220623/lowlevel/{mbid[:2]}/{mbid[2]}/{mbid}-0.json'
       if os.path.isfile(filename):
-        shutil.copyfile(filename, 'data/jsons/ab-low-level/low-level_{mbid}.json')
+        shutil.copyfile(filename, f'data/jsons/ab-low-level/low-level_{mbid}.json')
         break
 
 def cleanup(num):
-  shutil.rmtree(f'data/accousticbrainz-lowlevel-json-{num}')
+  shutil.rmtree(f'data/acousticbrainz-lowlevel-json-20220623')
+  os.remove(f'data/acousticbrainz-lowlevel-json-{num}.tar.zst')
 
 if __name__ == "__main__":
   songs = pd.read_csv('data/songs_am-ids_mb-ids.csv', index_col='id')
@@ -50,6 +51,7 @@ if __name__ == "__main__":
     download_decompress(i)
     print("Download successful, starting JSON extraction")
     get_jsons(songs, i)
-    print("JSON extraction done\n")
+    print("JSON extraction done, starting cleanup")
     cleanup(i)
+    print(f"Cleanup for File {i} done\n")
   
