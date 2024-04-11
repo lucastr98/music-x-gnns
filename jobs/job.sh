@@ -1,21 +1,22 @@
 #!/bin/bash
 #SBATCH --mail-type=NONE # mail configuration: NONE, BEGIN, END, FAIL, REQUEUE, ALL
-#SBATCH --output=/itet-stor/lucastr/net_scratch/music-x-gnns/jobs/%j.out # where to store the output (%j is the JOBID), subdirectory "jobs" must exist
-#SBATCH --error=/itet-stor/lucastr/net_scratch/music-x-gnns/jobs/%j.err # where to store error messages
-#SBATCH --mem=16G
+#SBATCH --output=/itet-stor/lucastr/net_scratch/music-x-gnn/jobs/%j.out # where to store the output (%j is the JOBID), subdirectory "jobs" must exist
+#SBATCH --error=/itet-stor/lucastr/net_scratch/music-x-gnn/jobs/%j.err # where to store error messages
+#SBATCH --mem=20G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
 #SBATCH --exclude=tikgpu10,tikgpu[06-09]
-#CommentSBATCH --nodelist=arton[01-08] # Specify that it should run on this particular node
+#CommentSBATCH --nodelist=tikgpu01 # Specify that it should run on this particular node
 #CommentSBATCH --account=tik-internal
 #CommentSBATCH --constraint='titan_rtx|tesla_v100|titan_xp|a100_80gb'
 
 
 
 ETH_USERNAME=lucastr
-PROJECT_NAME=music-x-gnns
+PROJECT_NAME=music-x-gnn
 DIRECTORY=/itet-stor/${ETH_USERNAME}/net_scratch/${PROJECT_NAME}
-CONDA_ENVIRONMENT=scraping
+CONDA_ENVIRONMENT=graphgps
 mkdir -p ${DIRECTORY}/jobs
 #TODO: change your ETH USERNAME and other stuff from above according + in the #SBATCH output and error the path needs to be double checked!
 
@@ -50,7 +51,7 @@ echo "Conda activated"
 cd ${DIRECTORY}
 
 # Execute your code
-python main.py
+python gnn/main.py --cfg lastfm/configs/lastfm_example.yaml wandb.use True
 
 # Send more noteworthy information to the output log
 echo "Finished at: $(date)"
