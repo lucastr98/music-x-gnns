@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --mail-type=NONE # mail configuration: NONE, BEGIN, END, FAIL, REQUEUE, ALL
-#SBATCH --output=/itet-stor/lucastr/net_scratch/music-x-gnn/jobs/%j.out # where to store the output (%j is the JOBID), subdirectory "jobs" must exist
-#SBATCH --error=/itet-stor/lucastr/net_scratch/music-x-gnn/jobs/%j.err # where to store error messages
+#SBATCH --output=/itet-stor/lucastr/net_scratch/music-x-gnns/jobs/%j.out # where to store the output (%j is the JOBID), subdirectory "jobs" must exist
+#SBATCH --error=/itet-stor/lucastr/net_scratch/music-x-gnns/jobs/%j.err # where to store error messages
 #SBATCH --mem=20G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
@@ -14,7 +14,7 @@
 
 
 ETH_USERNAME=lucastr
-PROJECT_NAME=music-x-gnn
+PROJECT_NAME=music-x-gnns
 DIRECTORY=/itet-stor/${ETH_USERNAME}/net_scratch/${PROJECT_NAME}
 CONDA_ENVIRONMENT=graphgps
 mkdir -p ${DIRECTORY}/jobs
@@ -51,7 +51,7 @@ echo "Conda activated"
 cd ${DIRECTORY}
 
 # Execute your code
-python gnn/main.py --cfg lastfm/configs/lastfm_example.yaml wandb.use True
+python gnn/main.py --cfg gnn/configs/olga.yaml wandb.use True
 
 # Send more noteworthy information to the output log
 echo "Finished at: $(date)"
