@@ -2,7 +2,7 @@
 #SBATCH --mail-type=NONE # mail configuration: NONE, BEGIN, END, FAIL, REQUEUE, ALL
 #SBATCH --output=/itet-stor/lucastr/net_scratch/music-x-gnns/jobs/%j.out # where to store the output (%j is the JOBID), subdirectory "jobs" must exist
 #SBATCH --error=/itet-stor/lucastr/net_scratch/music-x-gnns/jobs/%j.err # where to store error messages
-#SBATCH --mem=20G
+#SBATCH --mem=128G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
@@ -51,7 +51,7 @@ echo "Conda activated"
 cd ${DIRECTORY}
 
 # Execute your code
-python gnn/main.py --cfg gnn/configs/olga.yaml wandb.use True
+python gnn/main.py --cfg gnn/configs/olga_triplet.yaml wandb.use True
 
 # Send more noteworthy information to the output log
 echo "Finished at: $(date)"
