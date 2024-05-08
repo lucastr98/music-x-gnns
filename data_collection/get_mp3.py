@@ -15,22 +15,31 @@ for index, row in olga_df.iterrows():
   if index % 10 == 0:
     print(f"processing index {index}")
 
+  length_available = True
   for mbid in row['tracks']:
     filename = f'data/jsons/ab-low-level-olga/low-level_{mbid}.json'
     if os.path.isfile(filename):
       with open(filename, 'r') as file:
         data = json.load(file)
-      break
-  artist = data['metadata']['tags']['artist'][0]
-  title = data['metadata']['tags']['title'][0]
-  length = data['metadata']['audio_properties']['length']
+        artist = data.get('metadata', {}).get('tags', {}).get('artist', [None])[0]
+        title = data.get('metadata', {}).get('tags', {}).get('title', [None])[0]
+        length = data.get('metadata', {}).get('audio_properties', {}).get('length', None)
+        if (artist is None) or (title is None):
+          continue
+        elif length is None:
+          length_available = False
+        break
 
   s = pytube.Search(f"{artist} {title}")
   yt = s.results[0]
-  yt_length = yt.length
-  ab_length = int(length)
-  if abs(yt_length - ab_length) > 10:
-    print(f"large difference in length for track {mbid} of artist {row['musicbrainz_id']}")
+  
+  if length_available:
+    yt_length = yt.length
+    ab_length = int(length)
+    if abs(yt_length - ab_length) > 10:
+      print(f"large difference in length for track {mbid} of artist {row['musicbrainz_id']}")
+  else:
+    print(f"length not available for track {mbid} of artist {row['musicbrainz_id']}")
 
   stream = yt.streams.filter(only_audio=True).first()
   stream.download(output_path='./data/mp3', filename=f'{mbid}.mp3')
