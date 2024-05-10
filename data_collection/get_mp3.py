@@ -3,17 +3,13 @@ import json
 import pandas as pd
 import ast
 import os
+from pytube.innertube import _default_clients
 
 olga_df = pd.read_csv("data/olga/olga.csv", index_col="index")
 olga_df['tracks'] = olga_df['tracks'].apply(ast.literal_eval)
 for index, row in olga_df.iterrows():
-  if index < 0:
+  if index < 9893:
     continue
-  if index > 1000:
-    break
-
-  if index % 10 == 0:
-    print(f"processing index {index}")
 
   length_available = True
   for mbid in row['tracks']:
@@ -30,6 +26,8 @@ for index, row in olga_df.iterrows():
           length_available = False
         break
 
+  print(index, artist, title, mbid)
+  _default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID_CREATOR"]
   s = pytube.Search(f"{artist} {title}")
   yt = s.results[0]
   
