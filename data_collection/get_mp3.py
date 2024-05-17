@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import ast
 import os
+from pytube.innertube import _default_clients
 
 failed_idx = [1001, 1393, 2073, 2624, 2793, 4084, 5541, 6447, 6971, 7899, 7986, 8146, 8842, 9167, 9408, 9598, 9635, 9893, 10394, 11132, 11283, 11597, 12521, 13078, 13698, 14197, 14303, 14847, 15380, 16231, 17554, 17619]
 
@@ -19,7 +20,7 @@ for index, row in olga_df.iterrows():
       track_set.add(mbid)
 
 for index, row in olga_df.iterrows():
-  if index < 0:
+  if index < 9893:
     continue
   if index in failed_idx:
     continue
@@ -49,6 +50,7 @@ for index, row in olga_df.iterrows():
   if mp3_exists:
     continue
   elif track_found:
+    _default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID_CREATOR"]
     s = pytube.Search(f"{artist} {title}")
     yt = s.results[0]
     
