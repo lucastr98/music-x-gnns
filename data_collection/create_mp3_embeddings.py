@@ -41,4 +41,4 @@ else:
 
 audio_embed = model.get_audio_embedding_from_filelist(x=audio_file, use_tensor=False)
 print(audio_embed.shape)
-np.save(f'data/olga/clap_{first_idx}_{last_idx}.npy', audio_embed)
+np.save(f'data/clap_{first_idx}_{last_idx}.npy', audio_embed)
