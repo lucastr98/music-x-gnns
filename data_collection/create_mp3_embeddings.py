@@ -35,7 +35,7 @@ elif dataset == 'disco-olga':
     elif index > last_idx:
       break
     mbid = row['track_mb-id']
-    audio_file.append(f'data/disco-olga_mp3')
+    audio_file.append(f'data/disco-olga_mp3/{mbid}')
 else:
   print(f"[ERROR] dataset {dataset} not implemented")
 
