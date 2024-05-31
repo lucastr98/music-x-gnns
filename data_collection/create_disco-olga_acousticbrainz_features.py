@@ -99,7 +99,7 @@ if __name__ == "__main__":
     else:
       common_set = common_set.intersection(attribute_set)
     f.close()
-  common_set.remove('rhythm.beats_position')
+  print(len(common_set))
 
   all_features = []
   for idx, row in df.iterrows():
