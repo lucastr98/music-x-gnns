@@ -50,7 +50,7 @@ echo "Conda activated"
 cd ${DIRECTORY}
 
 # Execute your code
-python data_collection/get_mp3.py
+python data_collection/get_disco-olga_mp3.py
 
 # Send more noteworthy information to the output log
 echo "Finished at: $(date)"
