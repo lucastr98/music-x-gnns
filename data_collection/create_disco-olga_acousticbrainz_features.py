@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 
 def deal_with_lists(object):
+  if len(object) == 0:
+    return False
   lst_type = type(object[0])
   if (lst_type == int) or (lst_type == float):
     return True
@@ -42,6 +44,8 @@ def read_json_object(obj, stack):
   return attribute_set
 
 def list_2_dict(object):
+  if len(object) == 0:
+    return []
   lst_type = type(object[0]) # acousticbrainz has no empty lists and no lists with different types TODO: check this
   if (lst_type == int) or (lst_type == float) or (lst_type == bool):
     return [float(x) for x in object]
@@ -85,7 +89,7 @@ if __name__ == "__main__":
 
   common_set = set()
   for idx, row in df.iterrows():
-    filename = "../data/jsons/ab-low-level_disco-olga" + row['track_mb-id'] + ".json"
+    filename = "../data/jsons/ab-low-level_disco-olga/" + row['track_mb-id'] + ".json"
     f = open(filename)
     data = json.load(f)
     stack = []
