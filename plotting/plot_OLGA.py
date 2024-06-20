@@ -2,13 +2,15 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 
-random = [989395, 989399, 989393, 989392]
-acousticbrainz = [989404, 989411, 989402, 989401]
-clap = [989421, 989422, 989417, 989414]
-acousticbrainz_clap = [989570, 989539, 989538, 989442]
+random = [991490, 991489, 991488, 991481]
+acousticbrainz = [991504, 991500, 991499, 991498]
+clap = [991520, 991518, 991516, 991514]
+acousticbrainz_clap = [991529, 991528, 991525, 991524]
 
 path = '../jobs/OLGA_eval/'
+split = 'test'
 
+cut_length = 4 if split == 'val' else 5
 random_ndcgs = []
 acousticbrainz_ndcgs = []
 clap_ndcgs = []
@@ -17,33 +19,33 @@ for i in range(4):
   with open(f"{path}{str(random[i])}.out", "r") as f:
     val_lines = []
     for ln in f:
-      if ln.startswith("val:"):
+      if ln.startswith(f"{split}:"):
         val_lines.append(ln)
-    json_rep = json.loads(val_lines[-1][4:].replace("'", '"'))
+    json_rep = json.loads(val_lines[-1][cut_length:].replace("'", '"'))
     random_ndcgs.append(json_rep['ndcg'])
 
   with open(f"{path}{str(acousticbrainz[i])}.out", "r") as f:
     val_lines = []
     for ln in f:
-      if ln.startswith("val:"):
+      if ln.startswith(f"{split}:"):
         val_lines.append(ln)
-    json_rep = json.loads(val_lines[-1][4:].replace("'", '"'))
+    json_rep = json.loads(val_lines[-1][cut_length:].replace("'", '"'))
     acousticbrainz_ndcgs.append(json_rep['ndcg'])
 
   with open(f"{path}{str(clap[i])}.out", "r") as f:
     val_lines = []
     for ln in f:
-      if ln.startswith("val:"):
+      if ln.startswith(f"{split}:"):
         val_lines.append(ln)
-    json_rep = json.loads(val_lines[-1][4:].replace("'", '"'))
+    json_rep = json.loads(val_lines[-1][cut_length:].replace("'", '"'))
     clap_ndcgs.append(json_rep['ndcg'])
 
   with open(f"{path}{str(acousticbrainz_clap[i])}.out", "r") as f:
     val_lines = []
     for ln in f:
-      if ln.startswith("val:"):
+      if ln.startswith(f"{split}:"):
         val_lines.append(ln)
-    json_rep = json.loads(val_lines[-1][4:].replace("'", '"'))
+    json_rep = json.loads(val_lines[-1][cut_length:].replace("'", '"'))
     acousticbrainz_clap_ndcgs.append(json_rep['ndcg'])
 
 scores = np.array([random_ndcgs, acousticbrainz_ndcgs, clap_ndcgs, acousticbrainz_clap_ndcgs]).T
